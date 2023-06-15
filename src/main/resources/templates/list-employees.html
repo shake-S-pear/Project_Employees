@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<!--      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"-->
+
+<head>
+
+    <meta charset="utf-8"/>
+    <title>The Best Company - Employees</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <style>
+        table, th, td, tr {
+            border: 1px solid black;
+        }
+
+        table {
+            width: 90%;
+            margin-left: 80px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {background-color: #dddddd;}
+        tr:hover {background-color: #f7ecb5;}
+
+        h2, h3 {
+            background-color: #f2dede;
+            color: #985f0d;
+            text-align: center;
+        }
+
+        th {
+            background-color: #BDB76B;
+            color: #ffffff;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 0.8em;
+        }
+
+        a1 {
+            margin-left: 1600px;
+        }
+
+        footer {
+            background-color:#d6e9c6;
+            margin-left: 80px;
+            font-size: 0.8em;
+        }
+
+        div.welcome {
+            margin-left: 80px;
+            margin-top: 50px;
+        }
+
+    </style>
+
+</head>
+<body>
+    <th:block th:include="fragments/header :: header"></th:block>
+    <div>
+
+        <div class="welcome">
+            <span sec:authorize="isAuthenticated()">Welcome: <b><span sec:authentication="name"></span></b></span>
+        </div>
+
+            <h2>List of employees:</h2>
+
+        <br/><br/>
+        <a1>
+            <a href="/employee/showForm" class="btn btn-success" sec:authorize="hasRole('ADMIN')">Add Employee</a>
+        </a1>
+        <br/><br/>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=name&sortDir=' + ${reverseSortDir}}">Name</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=surname&sortDir=' + ${reverseSortDir}}">Surname</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=position.title&sortDir=' + ${reverseSortDir}}">Title</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=position.salary&sortDir=' + ${reverseSortDir}}">Salary (UAH)</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=address.zipcode&sortDir=' + ${reverseSortDir}}">Zipcode</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=address.city&sortDir=' + ${reverseSortDir}}">City</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=address.street&sortDir=' + ${reverseSortDir}}">Street</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=address.building&sortDir=' + ${reverseSortDir}}">Building</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=email&sortDir=' + ${reverseSortDir}}">Email</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=telephone&sortDir=' + ${reverseSortDir}}">Telephone</a>
+                </th>
+                <th>
+                    <a th:href="@{'/employee/list/page/' + ${currentPage} + '?sortField=birthdate&sortDir=' + ${reverseSortDir}}">Birth date</a>
+                </th>
+                <th>Actions</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tempEmployee : ${employees}">
+                <td th:text="${tempEmployee.name}">Name</td>
+                <td th:text="${tempEmployee.surname}">Surname</td>
+                <td th:text="${tempEmployee.position.title}">Title</td>
+                <td th:text="${tempEmployee.position.salary}">Salary (UAH)</td>
+                <td th:text="${tempEmployee.address.zipcode}">Zipcode</td>
+                <td th:text="${tempEmployee.address.city}">City</td>
+                <td th:text="${tempEmployee.address.street}">Street</td>
+                <td th:text="${tempEmployee.address.building}">Building</td>
+                <td th:text="${tempEmployee.email}">Email</td>
+                <td th:text="${tempEmployee.telephone}">Telephone</td>
+                <td th:text="${#dates.format(tempEmployee.birthdate, 'dd-MM-yyyy')}">Birth date</td>
+
+                <td>
+
+                    <a th:href="@{/employee/updateForm(employeeId=${tempEmployee.id})}" class="btn btn-warning"
+                       sec:authorize="hasRole('ADMIN')">Update</a>
+                    <a th:href="@{/employee/delete(employeeId=${tempEmployee.id})}" class="btn btn-danger"
+                       onclick="
+                            if (!(confirm('Are you sure you want to delete this employee?'))) return false
+                            window.location.href='${deleteLink}'"
+                       sec:authorize="hasRole('ADMIN')">Delete</a>
+
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+
+        <br/><br/>
+
+    <h3>
+        <div>&nbsp;</div>
+        <div><i>Sorted by [[${sortField}]] in [[${sortDir}]] order</i></div>
+        <div>&nbsp;</div>
+        <div th:if="${totalPages > 1}">
+            Total Employees: [[${totalEmployees}]]
+            &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+
+            <a th:if="${currentPage > 1}" th:href="@{'/employee/list/page/1' + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">First</a>
+            <span th:unless="${currentPage > 1}">First</span>        &nbsp;&nbsp;
+
+            <a th:if="${currentPage > 1}" th:href="@{'/employee/list/page/' + ${currentPage - 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Previous</a>
+            <span th:unless="${currentPage > 1}">Previous</span>        &nbsp;&nbsp;
+
+            <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${currentPage != i}" th:href="@{'/employee/list/page/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
+                <span th:unless="${currentPage != i}">[[${i}]]</span>
+            </span>
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/employee/list/page/' + ${currentPage + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
+            <span th:unless="${currentPage < totalPages}">Next</span>        &nbsp;&nbsp;
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/employee/list/page/' + ${totalPages} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
+            <span th:unless="${currentPage < totalPages}">Last</span>
+            <div>&nbsp;</div>
+
+        </div>
+    </h3>
+    </div>
+
+    <th:block th:include="fragments/footer :: footer"></th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
